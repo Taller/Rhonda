@@ -14,10 +14,10 @@ typedef struct _node
 } node;
 
 
-void append(node **,int);
-void in_begin(node **,int);
-void del(node **,int);
-void in_middle(node **,int,int);
+void append(node **, int);
+void in_begin(node **, int);
+void del(node **, int);
+void in_middle(node **, int, int);
 int count(node *);
 void display(node *);
 

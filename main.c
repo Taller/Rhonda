@@ -13,10 +13,9 @@ void gotoxy(int x, int y)
 
 int main(void)
 {
-    struct node *p;  /* p can be said as the head or a start ptr */
-    p=NULL;
-    /* Printing the menu */
-    int num,loc;
+    node *p;
+    p = LSQ_HandleInvalid;
+    int num;
 
     srand ( time(NULL) );
     int i;
