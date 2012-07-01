@@ -22,20 +22,38 @@
 /* Функция, создающая пустой контейнер. Возвращает назначенный ему дескриптор */
 LSQ_HandleT LSQ_CreateSequence(void)
 {
-//    return (struct node *)malloc(sizeof(struct node));
+    return malloc(sizeof(struct _node));
 }
 
 
 /* Функция, уничтожающая контейнер с заданным дескриптором. Освобождает принадлежащую ему память */
 void LSQ_DestroySequence(LSQ_HandleT handle)
 {
+    LSQ_node_ptr t = (LSQ_node_ptr)handle;
+    free(t->iterator);
     free(handle);
 }
 
 /* Функция, возвращающая текущее количество элементов в контейнере */
 LSQ_IntegerIndexT LSQ_GetSize(LSQ_HandleT handle)
 {
-//    return (LSQ_IntegerIndexT)((struct node *)handle)->length;
+    LSQ_IntegerIndexT size = 1;
+    if(handle != LSQ_HandleInvalid)
+    {
+        LSQ_node_ptr  t = (LSQ_node_ptr)handle;
+        LSQ_iterator_ptr t_iptr;
+        t_iptr = t->iterator;
+
+        do
+        {
+            t_iptr = t->iterator;
+            t = t_iptr->next;
+            size++;
+        }
+        while(t_iptr->next != NULL);
+    }
+
+    return size;
 }
 
 /* Функция, определяющая, может ли данный итератор быть разыменован */
@@ -64,6 +82,7 @@ int LSQ_IsIteratorBeforeFirst(LSQ_IteratorT iterator)
 /* Функция, разыменовывающая итератор. Возвращает указатель на элемент, на который ссылается данный итератор */
 LSQ_BaseTypeT* LSQ_DereferenceIterator(LSQ_IteratorT iterator)
 {
+
 }
 
 /* Следующие три функции создают итератор в памяти и возвращают его дескриптор */
@@ -75,6 +94,7 @@ LSQ_IteratorT LSQ_GetElementByIndex(LSQ_HandleT handle, LSQ_IntegerIndexT index)
 /* Функция, возвращающая итератор, ссылающийся на первый элемент контейнера */
 LSQ_IteratorT LSQ_GetFrontElement(LSQ_HandleT handle)
 {
+
 }
 
 /* Функция, возвращающая итератор, ссылающийся на элемент контейнера следующий за последним */
@@ -120,6 +140,29 @@ void LSQ_InsertFrontElement(LSQ_HandleT handle, LSQ_BaseTypeT element)
 /* Функция, добавляющая элемент в конец контейнера */
 void LSQ_InsertRearElement(LSQ_HandleT handle, LSQ_BaseTypeT element)
 {
+    /* передается ли инициализированный список */
+    if(handle == LSQ_HandleInvalid)
+    {
+        printf("Handle Invalid");
+        return;
+    }
+    else
+    {
+        LSQ_node_ptr t_node = (LSQ_node_ptr)handle;
+        LSQ_iterator_ptr t_iterator = t_node->iterator;
+
+        LSQ_Node *new_node = (LSQ_node_ptr)malloc(sizeof(LSQ_node_ptr));
+        LSQ_Iterator *new_iterator = (LSQ_iterator_ptr)malloc(sizeof(LSQ_Iterator));
+        new_node->value = element;
+        t_iterator->next = new_node;
+//        int s = LSQ_GetSize(t_node);
+//        printf("%d", LSQ_GetSize(handle));
+//        new_iterator->index = LSQ_GetSize(handle);
+        new_iterator->next = NULL;
+        new_iterator->prev = t_node;
+        new_iterator->self = new_node;
+        new_node->iterator = new_iterator;
+    }
 }
 
 /* Функция, добавляющая элемент в контейнер на позицию, указываемую в данный момент итератором.         */

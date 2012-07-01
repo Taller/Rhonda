@@ -3,8 +3,6 @@
 
 #define MAX_SEQUENCE_SIZE 30
 
-#include <stdlib.h>
-
 /* Тип хранимых в контейнере значений */
 typedef int LSQ_BaseTypeT;
 
@@ -20,8 +18,30 @@ typedef void* LSQ_IteratorT;
 /* Тип целочисленного индекса контейнера */
 typedef int LSQ_IntegerIndexT;
 
+struct _node;
+struct _iterator;
+
+typedef struct _node* LSQ_node_ptr;
+typedef struct _iterator* LSQ_iterator_ptr;
+
+typedef struct _iterator
+{
+    LSQ_IntegerIndexT index;
+    LSQ_node_ptr prev;
+    LSQ_node_ptr next;
+    LSQ_node_ptr self;
+} LSQ_Iterator;
+
+typedef struct _node
+{
+    LSQ_BaseTypeT value;
+    LSQ_iterator_ptr iterator;
+} LSQ_Node;
+
+
 /* Функция, создающая пустой контейнер. Возвращает назначенный ему дескриптор */
 extern LSQ_HandleT LSQ_CreateSequence(void);
+
 /* Функция, уничтожающая контейнер с заданным дескриптором. Освобождает принадлежащую ему память */
 extern void LSQ_DestroySequence(LSQ_HandleT handle);
 

@@ -1,36 +1,41 @@
-#include "simple_list.h"
+//#include "simple_list.h"
 #include <stdlib.h>
 #include <stdio.h>
 
-void append(node **q, int num)
+void append(struct _node **q, int num)
 {
-    node *temp,*r;
+    struct _node *temp, *r;
+    struct _iterator *iter_tmp;
     temp = *q;
+//    iter_tmp = (*q)->iter_ptr;
     if(NULL == *q)
     {
-        temp = (node *)malloc(sizeof(node));
+        temp = (struct _node *)malloc(sizeof(struct _node));
+        iter_tmp = (struct _iterator *)malloc(sizeof(struct _iterator));
+
+
         temp->value = num;
-        temp->next = LSQ_HandleInvalid;
-        temp->prev = temp;
+        temp->iter_ptr->next = LSQ_HandleInvalid;
+        temp->iter_ptr->prev = temp;
 
         *q = temp;
      }
      else
      {
         temp = *q;
-        while(temp->next != LSQ_HandleInvalid)
+        while(temp->iter_ptr->next != LSQ_HandleInvalid)
         {
-            temp = temp->next;
+            temp = temp->iter_ptr->next;
         }
-        r = (node *)malloc(sizeof(node));
+        r = (struct _node *)malloc(sizeof(struct _node));
         r->value = num;
-        r->next = NULL;
-        r->prev = temp;
-        temp->next = r;
+        r->iter_ptr->next = NULL;
+        r->iter_ptr->prev = temp;
+        temp->iter_ptr->next = r;
      }
 }
 
-void display(node *q)
+void display(struct _node *q)
 {
     if(q == LSQ_HandleInvalid)
     {
@@ -40,11 +45,11 @@ void display(node *q)
     while(q != NULL)
     {
         printf("\n%d", q->value);
-        q = q->next;
+        q = q->iter_ptr->next;
     }
 }
 
-int count(node *q)
+int count(struct _node *q)
 {
     if(q == LSQ_HandleInvalid)
     {
@@ -56,12 +61,12 @@ int count(node *q)
     while(q != LSQ_HandleInvalid)
     {
         c++;
-        q = q->next;
+        q = q->iter_ptr->next;
     }
     return c;
 }
 
-void in_begin(node **q, int num)
+void in_begin(struct _node **q, int nodeValue)
 {
     if(*q == LSQ_HandleInvalid)
     {
@@ -69,17 +74,17 @@ void in_begin(node **q, int num)
     }
     else
     {
-        node *temp;
-        temp = (node *)malloc(sizeof(node));
-        temp->value = num;
-        temp->next = *q;
+        struct _node *temp;
+        temp = (struct _node *)malloc(sizeof(struct _node));
+        temp->value = nodeValue;
+        temp->iter_ptr->next = *q;
         *q = temp;  /* first node */
      }
 }
 
-void in_middle(node **q, int loc, int num)
+void in_middle(struct _node **q, int loc, int num)
 {
-    node *temp,*n;
+    struct _node *temp,*n;
     int c = 1,flag=0;
     temp = *q;
     if(*q == LSQ_HandleInvalid)
@@ -91,14 +96,14 @@ void in_middle(node **q, int loc, int num)
     {
         if(c == loc)
         {
-            n = (node *)malloc(sizeof(node));
+            n = (struct _node *)malloc(sizeof(struct _node));
             n->value = num;
-            n->next = temp->next;
-            temp->next = n;
+            n->iter_ptr->next = temp->iter_ptr->next;
+            temp->iter_ptr->next = n;
             flag = 1;
         }
         c++;
-        temp = temp->next;
+        temp = temp->iter_ptr->next;
      }
      if(flag == 0)
      {
@@ -110,7 +115,7 @@ void in_middle(node **q, int loc, int num)
      }
 }
 
-void del(node**q, int num)
+void del(struct _node **q, int num)
 {
     if(*q == LSQ_HandleInvalid)
     {
@@ -119,7 +124,7 @@ void del(node**q, int num)
     }
     else
     {
-        node *old,*temp;
+        struct _node *old, *temp;
         int flag = 0;
         temp = *q;
         while(temp != LSQ_HandleInvalid)
@@ -127,16 +132,16 @@ void del(node**q, int num)
             if(temp->value == num)
             {
                 if(temp == *q)         /* First Node case */
-                *q = temp->next;       /* shifted the header node */
+                *q = temp->iter_ptr->next;       /* shifted the header node */
                 else
-                old->next = temp->next;
+                old->iter_ptr->next = temp->iter_ptr->next;
 
                 free(temp);
                 flag = 1;
             }
             else
             {  old = temp;
-                temp = temp->next;
+                temp = temp->iter_ptr->next;
             }
         }
         if(flag == 0)

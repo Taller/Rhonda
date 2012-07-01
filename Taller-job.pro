@@ -3,10 +3,8 @@ CONFIG += console
 CONFIG -= qt
 
 SOURCES += main.c \
-    linear_sequence.c \
-    simple_list.c
+    linear_sequence.c
 
 HEADERS += \
-    linear_sequence.h \
-    simple_list.h
+    linear_sequence.h
 

@@ -1,24 +1,28 @@
 #ifndef SIMPLE_LIST_H
 #define SIMPLE_LIST_H
 
-#include "linear_sequence.h"
+//#include "linear_sequence.h"
 
+struct _iterator
+{
+    LSQ_IntegerIndexT index;
+    struct _node * prev;
+    struct _node * next;
+    struct _node * self;
+};
 
-typedef struct _node
+struct _node
 {
     LSQ_BaseTypeT value;
-//    struct _node *prev;
-    LSQ_HandleT prev;
-//    struct _node *next;
-    LSQ_HandleT next;
-} node;
+    struct _iterator *iter_ptr;
+};
 
 
-void append(node **, int);
-void in_begin(node **, int);
-void del(node **, int);
-void in_middle(node **, int, int);
-int count(node *);
-void display(node *);
+void append(struct _node **nlist, int node);
+void in_begin(struct _node **nlist, int node);
+void del(struct _node **nlist, int node);
+void in_middle(struct _node **nlist, int, int);
+int count(struct _node *nlist);
+void display(struct _node *nlist);
 
 #endif // SIMPLE_LIST_H
