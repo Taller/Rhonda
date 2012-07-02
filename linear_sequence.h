@@ -24,20 +24,17 @@ struct _iterator;
 typedef struct _node* LSQ_node_ptr;
 typedef struct _iterator* LSQ_iterator_ptr;
 
-typedef struct _iterator
-{
-    LSQ_IntegerIndexT index;
-    LSQ_node_ptr prev;
-    LSQ_node_ptr next;
-    LSQ_node_ptr self;
-} LSQ_Iterator;
-
 typedef struct _node
 {
     LSQ_BaseTypeT value;
-    LSQ_iterator_ptr iterator;
+    LSQ_node_ptr prev;
+    LSQ_node_ptr next;
 } LSQ_Node;
 
+typedef struct _iterator
+{
+    LSQ_node_ptr self;
+} LSQ_Iterator;
 
 /* Функция, создающая пустой контейнер. Возвращает назначенный ему дескриптор */
 extern LSQ_HandleT LSQ_CreateSequence(void);
