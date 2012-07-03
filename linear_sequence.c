@@ -22,9 +22,14 @@
 /* Функция, создающая пустой контейнер. Возвращает назначенный ему дескриптор */
 LSQ_HandleT LSQ_CreateSequence(void)
 {
-    LSQ_HandleT quit = malloc(sizeof(LSQ_Node));
-    ((LSQ_node_ptr)quit)->next = NULL;
-    ((LSQ_node_ptr)quit)->prev = NULL;
+    LSQ_handler_ptr quit = (LSQ_handler_ptr)malloc(sizeof(LSQ_handler));
+    LSQ_node_ptr new_node = (LSQ_node_ptr)malloc(sizeof(LSQ_Node));
+
+    new_node->next = NULL;
+    new_node->prev = NULL;
+
+    quit->node_list = new_node;
+
     return quit;
 }
 
@@ -53,25 +58,28 @@ void LSQ_DestroySequence(LSQ_HandleT handle)
 /* Функция, возвращающая текущее количество элементов в контейнере */
 LSQ_IntegerIndexT LSQ_GetSize(LSQ_HandleT handle)
 {
-    int size = 1;
+    LSQ_IntegerIndexT size = 0;
 
-    if(handle != NULL)
+    if(handle != LSQ_HandleInvalid)
     {
-        LSQ_node_ptr t_node = (LSQ_node_ptr)handle;
-        printf("value = %d \t size = %d\n", t_node->value, size);
-        do
+        LSQ_handler_ptr t_handler = (LSQ_handler_ptr)handle;
+        LSQ_node_ptr t_node = t_handler->node_list;
+        if(t_node->next != NULL && t_node->prev != NULL)
         {
-            t_node = t_node->next;
+            while(t_node->next != t_node)
+            {
+                t_node = t_node->next;
+                size++;
+            }
             size++;
-            printf("value = %d \t size = %d\n", t_node->value, size);
         }
-        while(t_node->next != t_node);
     }
 
     return size;
 }
 
 /* Функция, определяющая, может ли данный итератор быть разыменован */
+/* Q: разобраться, что должна сделать эта функция */
 int LSQ_IsIteratorDereferencable(LSQ_IteratorT iterator)
 {
     if(iterator != NULL)
@@ -85,6 +93,7 @@ int LSQ_IsIteratorDereferencable(LSQ_IteratorT iterator)
 }
 
 /* Функция, определяющая, указывает ли данный итератор на элемент, следующий за последним в контейнере */
+/* Q: разобраться, что должна сделать эта функция */
 int LSQ_IsIteratorPastRear(LSQ_IteratorT iterator)
 {
     if(iterator != NULL)
@@ -98,6 +107,7 @@ int LSQ_IsIteratorPastRear(LSQ_IteratorT iterator)
 }
 
 /* Функция, определяющая, указывает ли данный итератор на элемент, предшествующий первому в контейнере */
+/* Q: разобраться, что должна сделать эта функция */
 int LSQ_IsIteratorBeforeFirst(LSQ_IteratorT iterator)
 {
     if(iterator != NULL)
@@ -113,18 +123,28 @@ int LSQ_IsIteratorBeforeFirst(LSQ_IteratorT iterator)
 /* Функция, разыменовывающая итератор. Возвращает указатель на элемент, на который ссылается данный итератор */
 LSQ_BaseTypeT* LSQ_DereferenceIterator(LSQ_IteratorT iterator)
 {
-    LSQ_node_ptr t_node = (LSQ_node_ptr)iterator;
-    return &t_node->value;
+    if(iterator != NULL)
+    {
+        LSQ_node_ptr t_node = (LSQ_node_ptr)iterator;
+        return &(t_node->value);
+    }
+    else
+    {
+        return NULL;
+    }
 }
+/* ???? */
 
 /* Следующие три функции создают итератор в памяти и возвращают его дескриптор */
 /* Функция, возвращающая итератор, ссылающийся на элемент с указанным индексом */
+/* TODO что должна возвращать функция, если индекс указан больше, количества элементов? NULL? */
 LSQ_IteratorT LSQ_GetElementByIndex(LSQ_HandleT handle, LSQ_IntegerIndexT index)
 {
-    int i = 1;
+    int i = 0;
     if(handle != LSQ_HandleInvalid)
     {
-        LSQ_node_ptr t_node = (LSQ_node_ptr)handle;
+        LSQ_handler_ptr t_handler = (LSQ_handler_ptr)handle;
+        LSQ_node_ptr t_node = (LSQ_node_ptr)t_handler->node_list;
         while(i < index && t_node != t_node->next)
         {
             t_node = t_node->next;
@@ -146,8 +166,8 @@ LSQ_IteratorT LSQ_GetFrontElement(LSQ_HandleT handle)
     if(handle != LSQ_HandleInvalid)
     {
         LSQ_iterator_ptr t_iter = (LSQ_iterator_ptr)malloc(sizeof(LSQ_Iterator));
-        LSQ_node_ptr t_node = (LSQ_node_ptr)handle;
-        t_iter->self = t_node;
+        LSQ_handler_ptr t_handler = (LSQ_handler_ptr)handle;
+        t_iter->self = t_handler->node_list;
         return t_iter;
     }
     else
@@ -159,14 +179,13 @@ LSQ_IteratorT LSQ_GetFrontElement(LSQ_HandleT handle)
 /* Функция, возвращающая итератор, ссылающийся на элемент контейнера следующий за последним */
 LSQ_IteratorT LSQ_GetPastRearElement(LSQ_HandleT handle)
 {
-    (LSQ_node_ptr)handle;
     return NULL;
 }
 
 /* Функция, уничтожающая итератор с заданным дескриптором и освобождающая принадлежащую ему память */
 void LSQ_DestroyIterator(LSQ_IteratorT iterator)
 {
-
+    free(iterator);
 }
 
 /* Функция, перемещающая итератор на один элемент вперед */
@@ -221,7 +240,9 @@ void LSQ_SetPosition(LSQ_IteratorT iterator, LSQ_IntegerIndexT pos)
 {
     if(iterator != NULL)
     {
-        LSQ_node_ptr t_node = (LSQ_node_ptr)iterator;
+        LSQ_iterator_ptr t_iterator = (LSQ_iterator_ptr)iterator;
+        LSQ_node_ptr t_node = t_iterator->self;
+
         while(t_node != t_node->prev)
         {
             t_node = t_node->prev;
@@ -232,71 +253,67 @@ void LSQ_SetPosition(LSQ_IteratorT iterator, LSQ_IntegerIndexT pos)
             t_node = t_node->next;
             i++;
         }
-
-        iterator = t_node;
+        t_iterator->self = t_node;
+        iterator = t_iterator;
     }
 }
+/* READY                                                                */
+/* void LSQ_SetPosition(LSQ_IteratorT iterator, LSQ_IntegerIndexT pos)  */
+
+
 
 /* Функция, добавляющая элемент в начало контейнера */
 void LSQ_InsertFrontElement(LSQ_HandleT handle, LSQ_BaseTypeT element)
 {
-    if(handle == LSQ_HandleInvalid)
+    if(handle != LSQ_HandleInvalid)
     {
-        printf("Handle Invalid");
-        return;
-    }
-    else
-    {
-        LSQ_node_ptr t_node = (LSQ_node_ptr)handle;
-        LSQ_node_ptr new_node = (LSQ_node_ptr)malloc(sizeof(LSQ_Node));
-        new_node->prev = t_node;
-        new_node->next = t_node->next;
-        new_node->value = t_node->value;
-        t_node->value = element;
-        t_node->next = new_node;
+        LSQ_handler_ptr t_handler = (LSQ_handler_ptr)handle;
+        LSQ_node_ptr old_first = t_handler->node_list;
 
-        printf("handle %p\n", handle);
-        printf("element = %d\n", element);
-        printf("new_node %p\n", new_node);
-        printf("new_node->next %p\n", new_node->next);
-        printf("new_node->prev %p\n", new_node->prev);
-        printf("new_node->value %d\n", new_node->value);
-        printf("t_node %p\n", t_node);
-        printf("t_node->next %p\n", t_node->next);
-        printf("t_node->prev %p\n", t_node->prev);
-        printf("t_node->value %d\n", t_node->value);
-        printf("=====================================\n");
+        if(old_first->next == NULL && old_first->prev == NULL)
+        {
+            old_first->next = old_first;
+            old_first->prev = old_first;
+            old_first->value = element;
+        }
+        else
+        {
+            LSQ_node_ptr new_first = (LSQ_node_ptr)malloc(sizeof(LSQ_Node));
+
+            new_first->next = old_first;
+            new_first->prev = new_first;
+            new_first->value = element;
+
+            old_first->prev = new_first;
+
+            t_handler->node_list = new_first;
+        }
     }
 
 }
+/* READY                                                                   */
+/* void LSQ_InsertFrontElement(LSQ_HandleT handle, LSQ_BaseTypeT element)  */
+
+
+
 
 /* Функция, добавляющая элемент в конец контейнера */
 void LSQ_InsertRearElement(LSQ_HandleT handle, LSQ_BaseTypeT element)
 {
-    if(handle == LSQ_HandleInvalid)
+    if(handle != LSQ_HandleInvalid)
     {
-        printf("Handle Invalid");
-        return;
-    }
-    else
-    {
-        LSQ_node_ptr t_node = (LSQ_node_ptr)handle;
+        LSQ_handler_ptr t_handler = (LSQ_handler_ptr)handle;
+        LSQ_node_ptr t_node = t_handler->node_list;
         if(t_node->next == NULL && t_node->prev == NULL)
         {
             t_node->value = element;
             t_node->prev = t_node;
             t_node->next = t_node;
-            printf("element = %d\n", element);
-            printf("t_node %p\n", t_node);
-            printf("t_node->next %p\n", t_node->next);
-            printf("t_node->prev %p\n", t_node->prev);
-            printf("t_node->value %d\n", t_node->value);
-            printf("=====================================\n");
         }
         else
         {
             LSQ_node_ptr new_node = (LSQ_node_ptr)malloc(sizeof(LSQ_Node));
-            t_node->prev = new_node;
+
             while(t_node->next != t_node)
             {
                 t_node = t_node->next;
@@ -306,62 +323,112 @@ void LSQ_InsertRearElement(LSQ_HandleT handle, LSQ_BaseTypeT element)
             new_node->next = new_node;
             new_node->value = element;
             new_node->prev = t_node;
-
-            printf("element = %d\n", element);
-            printf("new_node %p\n", new_node);
-            printf("new_node->next %p\n", new_node->next);
-            printf("new_node->prev %p\n", new_node->prev);
-            printf("new_node->value %d\n", new_node->value);
-            printf("t_node %p\n", t_node);
-            printf("t_node->next %p\n", t_node->next);
-            printf("t_node->prev %p\n", t_node->prev);
-            printf("t_node->value %d\n", t_node->value);
-            printf("=====================================\n");
         }
-
     }
 }
+/* READY                                                                  */
+/* void LSQ_InsertRearElement(LSQ_HandleT handle, LSQ_BaseTypeT element)  */
+
 
 /* Функция, добавляющая элемент в контейнер на позицию, указываемую в данный момент итератором.         */
 /* Элемент, на который указывает итератор, а также все последующие, сдвигается на одну позицию в конец. */
 /* Заданный итератор продолжает указывать на элемент последовательности с тем же индексом.              */
 void LSQ_InsertElementBeforeGiven(LSQ_IteratorT iterator, LSQ_BaseTypeT newElement)
 {
-    if(iterator == NULL)
+    if(iterator != NULL)
     {
-        printf("Handle Invalid");
-        return;
-    }
-    else
-    {
-        LSQ_node_ptr node_before = (LSQ_node_ptr)iterator;
-        LSQ_node_ptr node_after =  node_before->prev;
+        LSQ_iterator_ptr t_iterator = (LSQ_iterator_ptr)iterator;
+        LSQ_node_ptr prev_node = t_iterator->self->prev;
+        LSQ_node_ptr next_node = t_iterator->self;
         LSQ_node_ptr new_node = (LSQ_node_ptr)malloc(sizeof(LSQ_Node));
-        node_after->next = new_node;
-        node_before->prev = new_node;
 
-        new_node->prev = node_after;
-        new_node->next = node_before;
         new_node->value = newElement;
+        new_node->next = next_node;
+        new_node->prev = prev_node;
+
+        prev_node->next = new_node;
+        next_node->prev = new_node;
+
+        t_iterator->self = new_node;
     }
 }
+/* READY                                                                               */
+/* void LSQ_InsertElementBeforeGiven(LSQ_IteratorT iterator, LSQ_BaseTypeT newElement) */
+
 
 /* Функция, удаляющая первый элемент контейнера */
 void LSQ_DeleteFrontElement(LSQ_HandleT handle)
 {
+    if(handle != LSQ_HandleInvalid)
+    {
+        LSQ_handler_ptr t_handler = (LSQ_handler_ptr)handle;
+        LSQ_node_ptr old_first = t_handler->node_list;
+        LSQ_node_ptr new_first = old_first->next;
+
+        new_first->prev = new_first;
+        t_handler->node_list = new_first;
+
+        old_first->next = NULL;
+        old_first->prev = NULL;
+        free(old_first);
+    }
 }
+/* READY                                           */
+/* void LSQ_DeleteFrontElement(LSQ_HandleT handle) */
+
 
 /* Функция, удаляющая последний элемент контейнера */
 void LSQ_DeleteRearElement(LSQ_HandleT handle)
 {
+    if(handle != LSQ_HandleInvalid)
+    {
+        LSQ_handler_ptr t_handler = (LSQ_handler_ptr)handle;
+        LSQ_node_ptr old_last = t_handler->node_list;
+        while(old_last->next != old_last)
+        {
+            old_last = old_last->next;
+        }
+
+        LSQ_node_ptr new_last = old_last->prev;
+
+        new_last->next = new_last;
+
+        old_last->next = NULL;
+        old_last->prev = NULL;
+        free(old_last);
+    }
+
 }
+/* READY                                           */
+/* void LSQ_DeleteRearElement(LSQ_HandleT handle)  */
+
+
 
 /* Функция, удаляющая элемент контейнера, указываемый заданным итератором.                 */
 /* Все последующие элементы смещаются на одну позицию в сторону начала.                    */
 /* Заданный итератор продолжает указывать на элемент последовательности с тем же индексом. */
 void LSQ_DeleteGivenElement(LSQ_IteratorT iterator)
 {
-    LSQ_node_ptr t_node = (LSQ_node_ptr)iterator;
+    if(iterator != NULL)
+    {
+        LSQ_iterator_ptr t_iterator = (LSQ_iterator_ptr)iterator;
+        LSQ_node_ptr t_node = t_iterator->self;
+        LSQ_node_ptr prev_node = t_node->prev;
+        LSQ_node_ptr next_node = t_node->next;
+
+
+        prev_node->next = next_node;
+        next_node->prev = prev_node;
+
+        t_iterator->self = next_node;
+
+        t_node->next = NULL;
+        t_node->prev = NULL;
+
+        free(t_node);
+    }
 }
+/* READY                                                */
+/* void LSQ_DeleteGivenElement(LSQ_IteratorT iterator)  */
 
 /* #endif */

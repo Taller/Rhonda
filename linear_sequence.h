@@ -20,9 +20,11 @@ typedef int LSQ_IntegerIndexT;
 
 struct _node;
 struct _iterator;
+struct _handler;
 
 typedef struct _node* LSQ_node_ptr;
 typedef struct _iterator* LSQ_iterator_ptr;
+typedef struct _handler* LSQ_handler_ptr;
 
 typedef struct _node
 {
@@ -35,6 +37,12 @@ typedef struct _iterator
 {
     LSQ_node_ptr self;
 } LSQ_Iterator;
+
+typedef struct _handler
+{
+    LSQ_node_ptr node_list;
+} LSQ_handler;
+
 
 /* Функция, создающая пустой контейнер. Возвращает назначенный ему дескриптор */
 extern LSQ_HandleT LSQ_CreateSequence(void);
