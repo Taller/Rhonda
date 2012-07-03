@@ -74,6 +74,8 @@ int main(void)
     LSQ_DeleteRearElement(handler);
     print_LSQ(handler);
 
+    LSQ_DestroySequence(handler);
+
 //    srand ( time(NULL) );
 //    num = rand() % 10 +1;
 

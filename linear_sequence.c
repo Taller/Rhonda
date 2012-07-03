@@ -32,28 +32,41 @@ LSQ_HandleT LSQ_CreateSequence(void)
 
     return quit;
 }
+/* READY                                 */
+/* LSQ_HandleT LSQ_CreateSequence(void)  */
 
 
 /* Функция, уничтожающая контейнер с заданным дескриптором. Освобождает принадлежащую ему память */
 void LSQ_DestroySequence(LSQ_HandleT handle)
 {
-//    LSQ_node_ptr t = (LSQ_node_ptr)handle;
-//    while(t->next != t)
-//    {
-//        t = t->next;
-//    }
-//    do
-//    {
-//        t = t->prev;
-//        if(t->next != t)
-//        {
-//            printf("free %p, with value",t, t->value);
-//            free(t->next);
-//        }
-//    }
-//    while(t->prev != t);
-    free(handle);
+    LSQ_handler_ptr t_handler = (LSQ_handler_ptr)handle;
+    LSQ_node_ptr t_node = t_handler->node_list;
+    LSQ_node_ptr node_alone;
+
+    while(t_node->next != t_node)
+    {
+        t_node = t_node->next;
+    }
+
+    do
+    {
+        t_node = t_node->prev;
+        node_alone = t_node->next;
+        t_node->next = t_node;
+
+        node_alone->next = NULL;
+        node_alone->prev = NULL;
+
+        free(node_alone);
+    }
+    while(t_node->prev != t_node);
+    node_alone = t_handler->node_list;
+    free(node_alone);
+
+    free(t_handler);
 }
+/* READY                                         */
+/* void LSQ_DestroySequence(LSQ_HandleT handle)  */
 
 /* Функция, возвращающая текущее количество элементов в контейнере */
 LSQ_IntegerIndexT LSQ_GetSize(LSQ_HandleT handle)
@@ -77,6 +90,9 @@ LSQ_IntegerIndexT LSQ_GetSize(LSQ_HandleT handle)
 
     return size;
 }
+/* READY                                              */
+/* LSQ_IntegerIndexT LSQ_GetSize(LSQ_HandleT handle)  */
+
 
 /* Функция, определяющая, может ли данный итератор быть разыменован */
 /* Q: разобраться, что должна сделать эта функция */
@@ -165,24 +181,30 @@ LSQ_IteratorT LSQ_GetFrontElement(LSQ_HandleT handle)
 {
     if(handle != LSQ_HandleInvalid)
     {
-        LSQ_iterator_ptr t_iter = (LSQ_iterator_ptr)malloc(sizeof(LSQ_Iterator));
         LSQ_handler_ptr t_handler = (LSQ_handler_ptr)handle;
-        t_iter->self = t_handler->node_list;
-        return t_iter;
+        LSQ_iterator_ptr t_iterator = (LSQ_iterator_ptr)malloc(sizeof(LSQ_Iterator));
+        t_iterator->self = t_handler->node_list;
+        return t_iterator;
     }
     else
     {
         return NULL;
     }
 }
+/* READY                                                  */
+/* LSQ_IteratorT LSQ_GetFrontElement(LSQ_HandleT handle)  */
+
+
 
 /* Функция, возвращающая итератор, ссылающийся на элемент контейнера следующий за последним */
+/* Q: разобраться, что должна сделать эта функция */
 LSQ_IteratorT LSQ_GetPastRearElement(LSQ_HandleT handle)
 {
     return NULL;
 }
 
 /* Функция, уничтожающая итератор с заданным дескриптором и освобождающая принадлежащую ему память */
+/* TODO нужно ли делать iterator-self = NULL перед free(iterator)? */
 void LSQ_DestroyIterator(LSQ_IteratorT iterator)
 {
     free(iterator);
@@ -199,6 +221,9 @@ void LSQ_AdvanceOneElement(LSQ_IteratorT iterator)
         iterator = t_iterator;
     }
 }
+/* READY                                               */
+/* void LSQ_AdvanceOneElement(LSQ_IteratorT iterator)  */
+
 
 /* Функция, перемещающая итератор на один элемент назад */
 void LSQ_RewindOneElement(LSQ_IteratorT iterator)
@@ -211,6 +236,9 @@ void LSQ_RewindOneElement(LSQ_IteratorT iterator)
         iterator = t_iterator;
     }
 }
+/* READY                                              */
+/* void LSQ_RewindOneElement(LSQ_IteratorT iterator)  */
+
 
 /* Функция, перемещающая итератор на заданное смещение со знаком */
 void LSQ_ShiftPosition(LSQ_IteratorT iterator, LSQ_IntegerIndexT shift)
