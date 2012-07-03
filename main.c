@@ -76,6 +76,8 @@ int main(void)
 
     LSQ_DestroySequence(handler);
 
+    LSQ_GetFrontElement()
+
 //    srand ( time(NULL) );
 //    num = rand() % 10 +1;
 

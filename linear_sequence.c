@@ -68,6 +68,7 @@ void LSQ_DestroySequence(LSQ_HandleT handle)
 /* READY                                         */
 /* void LSQ_DestroySequence(LSQ_HandleT handle)  */
 
+
 /* Функция, возвращающая текущее количество элементов в контейнере */
 LSQ_IntegerIndexT LSQ_GetSize(LSQ_HandleT handle)
 {
@@ -79,6 +80,11 @@ LSQ_IntegerIndexT LSQ_GetSize(LSQ_HandleT handle)
         LSQ_node_ptr t_node = t_handler->node_list;
         if(t_node->next != NULL && t_node->prev != NULL)
         {
+            while(t_node->prev != t_node)
+            {
+                t_node = t_node->prev;
+            }
+
             while(t_node->next != t_node)
             {
                 t_node = t_node->next;
@@ -114,11 +120,21 @@ int LSQ_IsIteratorPastRear(LSQ_IteratorT iterator)
 {
     if(iterator != NULL)
     {
-        return 0;
+        LSQ_iterator_ptr t_iterator = (LSQ_iterator_ptr)iterator;
+        LSQ_node_ptr t_node = t_iterator->self;
+        LSQ_node_ptr t_node_last = t_node->prev;
+        if(t_node_last->next == t_node_last)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
     }
     else
     {
-        return 1;
+        return 0;
     }
 }
 
@@ -128,11 +144,21 @@ int LSQ_IsIteratorBeforeFirst(LSQ_IteratorT iterator)
 {
     if(iterator != NULL)
     {
-        return 0;
+        LSQ_iterator_ptr t_iterator = (LSQ_iterator_ptr)iterator;
+        LSQ_node_ptr t_node = t_iterator->self;
+        LSQ_node_ptr t_node_first = t_node->next;
+        if(t_node_first->prev == t_node_first)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
     }
     else
     {
-        return 1;
+        return 0;
     }
 }
 
@@ -183,7 +209,13 @@ LSQ_IteratorT LSQ_GetFrontElement(LSQ_HandleT handle)
     {
         LSQ_handler_ptr t_handler = (LSQ_handler_ptr)handle;
         LSQ_iterator_ptr t_iterator = (LSQ_iterator_ptr)malloc(sizeof(LSQ_Iterator));
-        t_iterator->self = t_handler->node_list;
+        LSQ_node_ptr t_node = (LSQ_node_ptr)t_handler->node_list;
+        while(t_node->prev != t_node)
+        {
+            t_node = t_node->prev;
+        }
+
+        t_iterator->self = t_node;
         return t_iterator;
     }
     else
