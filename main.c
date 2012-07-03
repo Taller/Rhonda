@@ -22,8 +22,19 @@ int main(void)
     s = LSQ_GetSize(node_list);
     printf("size = %d\n", s);
     printf("node_list = %p\n", node_list);
-    LSQ_DestroySequence(node_list);
 
+    iterator =(LSQ_iterator_ptr)LSQ_GetFrontElement(node_list);
+    printf("iterator->self = %p\n", iterator->self);
+    free(iterator);
+    iterator =(LSQ_iterator_ptr)LSQ_GetElementByIndex(node_list,2);
+    printf("iterator->self->value = %d\n", (iterator->self)->value);
+    printf("iterator->self = %p\n", iterator->self);
+    LSQ_AdvanceOneElement(iterator);
+    printf("iterator->self->value = %d\n", (iterator->self)->value);
+    printf("iterator->self = %p\n", iterator->self);
+    LSQ_RewindOneElement(iterator);
+    printf("iterator->self->value = %d\n", (iterator->self)->value);
+    printf("iterator->self = %p\n", iterator->self);
 //    srand ( time(NULL) );
 //    num = rand() % 10 +1;
 

@@ -121,16 +121,18 @@ LSQ_BaseTypeT* LSQ_DereferenceIterator(LSQ_IteratorT iterator)
 /* Функция, возвращающая итератор, ссылающийся на элемент с указанным индексом */
 LSQ_IteratorT LSQ_GetElementByIndex(LSQ_HandleT handle, LSQ_IntegerIndexT index)
 {
-    int i = 0;
+    int i = 1;
     if(handle != LSQ_HandleInvalid)
     {
         LSQ_node_ptr t_node = (LSQ_node_ptr)handle;
-        while(i < index || t_node != t_node->next)
+        while(i < index && t_node != t_node->next)
         {
             t_node = t_node->next;
             i++;
         }
-        return t_node;
+        LSQ_iterator_ptr t_iter = (LSQ_iterator_ptr)malloc(sizeof(LSQ_Iterator));
+        t_iter->self = t_node;
+        return t_iter;
     }
     else
     {
@@ -143,8 +145,10 @@ LSQ_IteratorT LSQ_GetFrontElement(LSQ_HandleT handle)
 {
     if(handle != LSQ_HandleInvalid)
     {
+        LSQ_iterator_ptr t_iter = (LSQ_iterator_ptr)malloc(sizeof(LSQ_Iterator));
         LSQ_node_ptr t_node = (LSQ_node_ptr)handle;
-        return t_node;
+        t_iter->self = t_node;
+        return t_iter;
     }
     else
     {
@@ -170,8 +174,10 @@ void LSQ_AdvanceOneElement(LSQ_IteratorT iterator)
 {
     if(iterator != NULL)
     {
-        LSQ_node_ptr t_node = (LSQ_node_ptr)iterator;
-        iterator = t_node->next;
+        LSQ_iterator_ptr t_iterator = (LSQ_iterator_ptr)iterator;
+        LSQ_node_ptr t_node = t_iterator->self;
+        t_iterator->self = t_node->next;
+        iterator = t_iterator;
     }
 }
 
@@ -180,8 +186,10 @@ void LSQ_RewindOneElement(LSQ_IteratorT iterator)
 {
     if(iterator != NULL)
     {
-        LSQ_node_ptr t_node = (LSQ_node_ptr)iterator;
-        iterator = t_node->prev;
+        LSQ_iterator_ptr t_iterator = (LSQ_iterator_ptr)iterator;
+        LSQ_node_ptr t_node = t_iterator->self;
+        t_iterator->self = t_node->prev;
+        iterator = t_iterator;
     }
 }
 
