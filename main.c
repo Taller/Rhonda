@@ -3,6 +3,7 @@
 #include <time.h>
 
 #include "linear_sequence.h"
+#include "lsq_struct.h"
 
 void print_LSQ(LSQ_HandleT handle)
 {
@@ -76,7 +77,6 @@ int main(void)
 
     LSQ_DestroySequence(handler);
 
-    LSQ_GetFrontElement()
 
 //    srand ( time(NULL) );
 //    num = rand() % 10 +1;

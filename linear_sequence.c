@@ -1,4 +1,5 @@
 #include "linear_sequence.h"
+#include "lsq_struct.h"
 #include <malloc.h>
 
 
@@ -101,66 +102,62 @@ LSQ_IntegerIndexT LSQ_GetSize(LSQ_HandleT handle)
 
 
 /* Функция, определяющая, может ли данный итератор быть разыменован */
-/* Q: разобраться, что должна сделать эта функция */
 int LSQ_IsIteratorDereferencable(LSQ_IteratorT iterator)
 {
     if(iterator != NULL)
     {
-        return 0;
+        LSQ_iterator_ptr t_iterator = (LSQ_iterator_ptr)iterator;
+
+        if(t_iterator->self != NULL)
+        {
+            return 1;
+        }
     }
-    else
-    {
-        return 1;
-    }
+
+    return 0;
 }
 
 /* Функция, определяющая, указывает ли данный итератор на элемент, следующий за последним в контейнере */
-/* Q: разобраться, что должна сделать эта функция */
+/* Функция, определяющая, указывает ли данный итератор на предпоследний элемент                        */
 int LSQ_IsIteratorPastRear(LSQ_IteratorT iterator)
 {
     if(iterator != NULL)
     {
         LSQ_iterator_ptr t_iterator = (LSQ_iterator_ptr)iterator;
         LSQ_node_ptr t_node = t_iterator->self;
-        LSQ_node_ptr t_node_last = t_node->prev;
+        LSQ_node_ptr t_node_last = t_node->next;
+
         if(t_node_last->next == t_node_last)
         {
             return 1;
         }
-        else
-        {
-            return 0;
-        }
     }
-    else
-    {
-        return 0;
-    }
+
+    return 0;
 }
+/* READY                                               */
+/* int LSQ_IsIteratorPastRear(LSQ_IteratorT iterator)  */
+
 
 /* Функция, определяющая, указывает ли данный итератор на элемент, предшествующий первому в контейнере */
-/* Q: разобраться, что должна сделать эта функция */
+/* Функция, определяющая, указывает ли данный итератор на второй элемент */
 int LSQ_IsIteratorBeforeFirst(LSQ_IteratorT iterator)
 {
     if(iterator != NULL)
     {
         LSQ_iterator_ptr t_iterator = (LSQ_iterator_ptr)iterator;
         LSQ_node_ptr t_node = t_iterator->self;
-        LSQ_node_ptr t_node_first = t_node->next;
+        LSQ_node_ptr t_node_first = t_node->prev;
         if(t_node_first->prev == t_node_first)
         {
             return 1;
         }
-        else
-        {
-            return 0;
-        }
     }
-    else
-    {
-        return 0;
-    }
+    return 0;
 }
+/* READY                                                  */
+/* int LSQ_IsIteratorBeforeFirst(LSQ_IteratorT iterator)  */
+
 
 /* Функция, разыменовывающая итератор. Возвращает указатель на элемент, на который ссылается данный итератор */
 LSQ_BaseTypeT* LSQ_DereferenceIterator(LSQ_IteratorT iterator)
@@ -229,11 +226,32 @@ LSQ_IteratorT LSQ_GetFrontElement(LSQ_HandleT handle)
 
 
 /* Функция, возвращающая итератор, ссылающийся на элемент контейнера следующий за последним */
-/* Q: разобраться, что должна сделать эта функция */
+/* Функция, возвращающая итератор, ссылающийся на предпоследний элемент контейнера */
 LSQ_IteratorT LSQ_GetPastRearElement(LSQ_HandleT handle)
 {
-    return NULL;
+    if(handle != LSQ_HandleInvalid)
+    {
+        LSQ_handler_ptr t_handler = (LSQ_handler_ptr)handle;
+        LSQ_node_ptr t_node_last = t_handler->node_list;
+
+        while(t_node_last != t_node_last->next)
+        {
+            t_node_last = t_node_last->next;
+        }
+
+        LSQ_node_ptr t_node = t_node_last->prev;
+        LSQ_iterator_ptr t_iterator = (LSQ_iterator_ptr)malloc(sizeof(LSQ_Iterator));
+        t_iterator->self = t_node;
+        return t_iterator;
+    }
+    else
+    {
+        return NULL;
+    }
 }
+/* READY                                                     */
+/* LSQ_IteratorT LSQ_GetPastRearElement(LSQ_HandleT handle)  */
+
 
 /* Функция, уничтожающая итератор с заданным дескриптором и освобождающая принадлежащую ему память */
 /* TODO нужно ли делать iterator-self = NULL перед free(iterator)? */
@@ -277,7 +295,8 @@ void LSQ_ShiftPosition(LSQ_IteratorT iterator, LSQ_IntegerIndexT shift)
 {
     if(iterator != NULL)
     {
-        LSQ_node_ptr t_node = (LSQ_node_ptr)iterator;
+        LSQ_iterator_ptr t_iterator = (LSQ_iterator_ptr)iterator;
+        LSQ_node_ptr t_node = t_iterator->self;
         while(shift)
         {
             if(shift > 0)
@@ -291,9 +310,13 @@ void LSQ_ShiftPosition(LSQ_IteratorT iterator, LSQ_IntegerIndexT shift)
                 t_node = t_node->next;
             }
         }
-        iterator = t_node;
+        t_iterator->self = t_node;
+        iterator = t_iterator;
     }
 }
+/* READY                                                                    */
+/* void LSQ_ShiftPosition(LSQ_IteratorT iterator, LSQ_IntegerIndexT shift)  */
+
 
 /* Функция, устанавливающая итератор на элемент с указанным номером */
 void LSQ_SetPosition(LSQ_IteratorT iterator, LSQ_IntegerIndexT pos)

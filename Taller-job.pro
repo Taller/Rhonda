@@ -6,5 +6,6 @@ SOURCES += main.c \
     linear_sequence.c
 
 HEADERS += \
-    linear_sequence.h
+    linear_sequence.h \
+    lsq_struct.h
 
