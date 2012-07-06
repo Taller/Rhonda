@@ -1,29 +1,33 @@
 #ifndef LSQ_STRUCT_H
 #define LSQ_STRUCT_H
+#include "linear_sequence.h"
 
-struct _node;
-struct _iterator;
-struct _handler;
+extern void insertFirstElement(LSQ_HandleT handle, LSQ_BaseTypeT element);
 
-typedef struct _node* LSQ_node_ptr;
-typedef struct _iterator* LSQ_iterator_ptr;
-typedef struct _handler* LSQ_handler_ptr;
+struct NodeT;
+struct IteratorT;
+struct HandleT;
 
 typedef struct _node
 {
     LSQ_BaseTypeT value;
-    LSQ_node_ptr prev;
-    LSQ_node_ptr next;
-} LSQ_Node;
+    struct _node * prev;
+    struct _node * next;
+} NodeT;
 
-typedef struct _iterator
-{
-    LSQ_node_ptr self;
-} LSQ_Iterator;
 
-typedef struct _handler
+typedef struct
 {
-    LSQ_node_ptr node_list;
-} LSQ_handler;
+    NodeT * head;
+    NodeT * tail;
+    int length;
+} HandleT;
+
+typedef struct
+{
+    NodeT * self;
+    LSQ_HandleT handle;
+    int index;
+} IteratorT;
 
 #endif // LSQ_STRUCT_H
