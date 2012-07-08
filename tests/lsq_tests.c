@@ -9,8 +9,8 @@ void print_LSQ(LSQ_HandleT handle)
 {
     if(handle != LSQ_HandleInvalid)
     {
-        LSQ_handler_ptr t_handler = (LSQ_handler_ptr)handle;
-        LSQ_node_ptr t_node = t_handler->node_list;
+        HandleT * t_handler = (HandleT *)handle;
+        NodeT * t_node = t_handler->head;
         int i = 1;
         printf("=========BEGIN OUTPUT================\n");
         do
@@ -27,13 +27,12 @@ void print_LSQ(LSQ_HandleT handle)
 
 int main(void)
 {
-    LSQ_handler_ptr handler = (LSQ_handler_ptr)LSQ_CreateSequence();
+    HandleT * handler = (HandleT *)LSQ_CreateSequence();
     LSQ_IntegerIndexT s;
-    LSQ_iterator_ptr iterator;
-    LSQ_node_ptr t_node;
+    IteratorT * iterator;
 
     printf("handler = %p\n", handler);
-    printf("node_list = %p\n", handler->node_list);
+    printf("node_list = %p\n", handler->head);
 
     LSQ_InsertFrontElement(handler, 6);
     LSQ_InsertRearElement(handler, 10);
@@ -45,14 +44,13 @@ int main(void)
     printf("size = %d\n", s);
     print_LSQ(handler);
 
-    iterator =(LSQ_iterator_ptr)LSQ_GetFrontElement(handler);
+    iterator = LSQ_GetFrontElement(handler);
     printf("iterator->self = %p\n", iterator->self);
-    t_node = iterator->self;
-    printf("t_node->value = %d\n", t_node->value);
+    printf("t_node->value = %d\n", iterator->self->value);
     printf("=====================================\n");
     LSQ_DestroyIterator(iterator);
 
-    iterator =(LSQ_iterator_ptr)LSQ_GetElementByIndex(handler, 2);
+    iterator = LSQ_GetElementByIndex(handler, 2);
     printf("iterator->self->value = %d\n", (iterator->self)->value);
     printf("iterator->self = %p\n", iterator->self);
 
@@ -83,4 +81,5 @@ int main(void)
 
     return 0;
 }
+
 

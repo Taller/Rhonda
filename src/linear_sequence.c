@@ -23,15 +23,11 @@
 /* Функция, создающая пустой контейнер. Возвращает назначенный ему дескриптор */
 LSQ_HandleT LSQ_CreateSequence(void)
 {
-    LSQ_HandleT handle = malloc(sizeof(HandleT));
+    HandleT * handle = malloc(sizeof(HandleT));
     NodeT * node = malloc(sizeof(NodeT));
 
-    node->next = NULL;
-    node->prev = NULL;
-
-    ((HandleT *)handle)->head = node;
-    ((HandleT *)handle)->tail = node;
-    ((HandleT *)handle)->length = 0;
+    *node = (NodeT) { .next = NULL, .prev = NULL};
+    *handle = (HandleT ) { .head = node, .tail= node, .length = 0};
 
     return handle;
 }

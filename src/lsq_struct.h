@@ -1,12 +1,9 @@
 #ifndef LSQ_STRUCT_H
 #define LSQ_STRUCT_H
+
 #include "linear_sequence.h"
 
 extern void insertFirstElement(LSQ_HandleT handle, LSQ_BaseTypeT element);
-
-struct NodeT;
-struct IteratorT;
-struct HandleT;
 
 typedef struct _node
 {
