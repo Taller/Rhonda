@@ -19,3 +19,5 @@ gcc -c -o build/lsq_tests.o tests/lsq_tests.c -I headers
 
 echo "Linking tests"
 gcc  -o run_tests -I headers -L./build -llsq build/lsq_tests.o
+
+./run_tests

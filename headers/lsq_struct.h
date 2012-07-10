@@ -26,7 +26,7 @@ typedef struct
 {
     NodeT * self;
     LSQ_HandleT handle;
-    int index;
+//    int index;
 } IteratorT;
 
 #endif /* LSQ_STRUCT_H_ */
