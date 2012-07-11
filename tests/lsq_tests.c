@@ -81,7 +81,7 @@ void test2(void)
 //    printf("iter = %p \t node = %p \t value = %d \n", iter, iter->self, iter->self->value);
     for(i = 49; i >= 0; i--)
     {
-        printf("front = %d \t index i = %d \t value = %d \n",front[i], i, *LSQ_DereferenceIterator(iter));
+        printf("rear = %d \t index i = %d \t value = %d \n",rear[i], i, *LSQ_DereferenceIterator(iter));
         assert( *LSQ_DereferenceIterator(iter) == rear[i] );
         LSQ_RewindOneElement(iter);
     }

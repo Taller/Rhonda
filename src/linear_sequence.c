@@ -277,7 +277,7 @@ void LSQ_SetPosition(LSQ_IteratorT iterator, LSQ_IntegerIndexT pos)
     {
         return;
     }
-    printf("h l = %d\n", ((HandleT *)((IteratorT *)iterator)->handle)->length);
+    
     if(pos > ((HandleT *)((IteratorT *)iterator)->handle)->length)
     {
         return;
