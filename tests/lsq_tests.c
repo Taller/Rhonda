@@ -88,19 +88,22 @@ void test1(void)
 {
     printf("\nCreate and destroy sequence immediately");
     HandleT * handle1 = (HandleT *)LSQ_CreateSequence();
+    assert( handle1 != NULL);
     IteratorT * iter = LSQ_GetFrontElement(handle1);
+    assert( iter != NULL);
     LSQ_DestroyIterator(iter); 
     LSQ_DestroySequence(handle1);
     printf("\t ---\t OK \n");
 }
 
-/* Create sequence, fill front, fill rear and destroy */
+/* Checking front and rear filling */
 void test2(void)
 {
     int i;
 //    print_LSQ(handle);    
 
     IteratorT * iter = LSQ_GetFrontElement(handle);
+    assert( iter != NULL);
     for(i = 49; i >= 0; i--)
     {
 //        printf("front = %d \t index i = %d \t value = %d \n",front[i], i, *LSQ_DereferenceIterator(iter));
@@ -109,6 +112,7 @@ void test2(void)
     }
 
     LSQ_SetPosition(iter, LSQ_GetSize(handle)-1);
+    assert( iter != NULL);
 
 //    print_LSQ(handle);    
 //    printf("iter = %p \t node = %p \t value = %d \n", iter, iter->self, iter->self->value);
@@ -130,10 +134,12 @@ void test2(void)
 void test3(void)
 {
     IteratorT * iter = LSQ_GetFrontElement(handle);
+    assert( iter != NULL);
     assert(LSQ_IsIteratorBeforeFirst(iter) == 1);
     printf("LSQ_IsIteratorBeforeFirst\t --- \t OK \n");
 
     IteratorT * iter2 = LSQ_GetPastRearElement(handle);
+    assert( iter2 != NULL);
     assert(LSQ_IsIteratorPastRear(iter2) == 1);
     printf("LSQ_IsIteratorPastRear\t\t --- \t OK \n");
 
@@ -148,6 +154,7 @@ void test4(void)
     int i, j;
     srand ( time(NULL) );
     IteratorT * iter = LSQ_GetFrontElement(handleAll);
+    assert( iter != NULL);
 
 //    print_LSQ(handleAll);
     printf("Testing SetPosition");
@@ -173,6 +180,7 @@ void test5(void)
 {
     int i;
     IteratorT * iter = LSQ_GetFrontElement(handleAll);
+    assert( iter != NULL);
 
 //    print_LSQ(handleAll);
     printf("Testing Advance");
@@ -208,6 +216,7 @@ void test6(void)
     for(i = 0; i < MAX_TEST_ATTEMPTS; i++)
     {
 	iter = LSQ_GetFrontElement(handleAll);
+        assert( iter != NULL);
 
         j = rand() % handleAll->length;
         LSQ_ShiftPosition(iter, j);
@@ -220,7 +229,8 @@ void test6(void)
     printf("Testing ShiftPosition backward");
     for(i = 0; i < MAX_TEST_ATTEMPTS; i++)
     {
-	iter = LSQ_GetPastRearElement(handleAll);
+        iter = LSQ_GetPastRearElement(handleAll);
+        assert( iter != NULL);
 
         j = rand() % handleAll->length;
         LSQ_ShiftPosition(iter, -j);
@@ -244,6 +254,7 @@ void test7(void)
     {
         j = rand() % handleAll->length;
         IteratorT * iter = LSQ_GetElementByIndex(handleAll, j);
+        assert( iter != NULL);
 //        printf("\nFound = %d \t Expecting = %d \t at index = %d", iter->self->value, all[j-1], j);
         assert(iter->self->value == all[j-1]);
         LSQ_DestroyIterator(iter);

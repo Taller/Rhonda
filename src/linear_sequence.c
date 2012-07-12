@@ -291,12 +291,25 @@ void LSQ_SetPosition(LSQ_IteratorT iterator, LSQ_IntegerIndexT pos)
         return;
     }
 
-    ((IteratorT *)iterator)->self = ((HandleT *)((IteratorT *)iterator)->handle)->head->next;
-    int i;
-    for(i = 0; i < pos; i++)
+    if(pos <= ((HandleT *)((IteratorT *)iterator)->handle)->length - pos)
     {
-        ((IteratorT *)iterator)->self = ((IteratorT *)iterator)->self->next;
+        ((IteratorT *)iterator)->self = ((HandleT *)((IteratorT *)iterator)->handle)->head->next;
+        int i;
+        for(i = 0; i < pos; i++)
+        {
+            ((IteratorT *)iterator)->self = ((IteratorT *)iterator)->self->next;
+        }
     }
+    else
+    {
+        ((IteratorT *)iterator)->self = ((HandleT *)((IteratorT *)iterator)->handle)->tail->prev;
+        int i;
+        for(i = 0; i < ((HandleT *)((IteratorT *)iterator)->handle)->length - pos - 1; i++)
+        {
+            ((IteratorT *)iterator)->self = ((IteratorT *)iterator)->self->prev;
+        }
+    }
+
 }
 /* READY                                                                */
 /* void LSQ_SetPosition(LSQ_IteratorT iterator, LSQ_IntegerIndexT pos)  */
