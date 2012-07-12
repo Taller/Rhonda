@@ -6,6 +6,9 @@
 #include "linear_sequence.h"
 #include "lsq_struct.h"
 
+#define MAX_handleALL_LEN 100
+#define MAX_TEST_ATTEMPTS 1000
+#define MAX_ELEMENT_VALUE 1000
 
 void test1(void);
 void test2(void);
@@ -16,7 +19,7 @@ void test6(void);
 void test7(void);
 void print_LSQ(LSQ_HandleT handle);
 
-LSQ_BaseTypeT front[50], rear[50], all[100];
+LSQ_BaseTypeT front[50], rear[50], all[MAX_handleALL_LEN];
 HandleT * handle;
 HandleT * handleAll;
 
@@ -29,10 +32,10 @@ int main(void)
     srand ( time(NULL) );
     for(i = 0; i < 50; i++)
     {
-        front[i] = rand() % 1000 +1;
-        rear[i] = rand() % 1000 +1;
-        all[i] =  rand() % 1000 +1;
-        all[i + 50] =  rand() % 1000 +1;
+        front[i] = rand() % MAX_ELEMENT_VALUE +1;
+        rear[i] = rand() % MAX_ELEMENT_VALUE +1;
+        all[i] =  rand() % MAX_ELEMENT_VALUE +1;
+        all[i + 50] =  rand() % MAX_ELEMENT_VALUE +1;
     }
     printf("\t ---\t OK \n");
 
@@ -51,7 +54,7 @@ int main(void)
     printf("\t ---\t OK \n");
 
     printf("Insert ALL elements");
-    for(i = 0; i < 100; i++)
+    for(i = 0; i < MAX_handleALL_LEN; i++)
     {
         LSQ_InsertRearElement(handleAll, all[i]);
     }
@@ -148,7 +151,7 @@ void test4(void)
 
 //    print_LSQ(handleAll);
     printf("Testing SetPosition");
-    for(i = 0; i < 1000; i++)
+    for(i = 0; i < MAX_TEST_ATTEMPTS; i++)
     {
         j = rand() % 1000;
 //        printf("\n Step = %d \t setPosition = %d ", i, j);
@@ -202,11 +205,11 @@ void test6(void)
 
 //    print_LSQ(handleAll);
     printf("Testing ShiftPosition forward");
-    for(i = 0; i < 1000; i++)
+    for(i = 0; i < MAX_TEST_ATTEMPTS; i++)
     {
 	iter = LSQ_GetFrontElement(handleAll);
 
-        j = rand() % 100;
+        j = rand() % handleAll->length;
         LSQ_ShiftPosition(iter, j);
         assert(iter->self->value == all[j]);
 
@@ -215,11 +218,11 @@ void test6(void)
     printf("\t\t ---\t OK \n");
 
     printf("Testing ShiftPosition backward");
-    for(i = 0; i < 1000; i++)
+    for(i = 0; i < MAX_TEST_ATTEMPTS; i++)
     {
 	iter = LSQ_GetPastRearElement(handleAll);
 
-        j = rand() % 100;
+        j = rand() % handleAll->length;
         LSQ_ShiftPosition(iter, -j);
         assert(iter->self->value == all[LSQ_GetSize(handleAll) - 1 - j]);
 
@@ -237,9 +240,9 @@ void test7(void)
 
 //    print_LSQ(handleAll);
     printf("Testing GetElementByIndex");
-    for(i = 0; i < 1000; i++)
+    for(i = 0; i < MAX_TEST_ATTEMPTS; i++)
     {
-        j = rand() % 100;
+        j = rand() % handleAll->length;
         IteratorT * iter = LSQ_GetElementByIndex(handleAll, j);
 //        printf("\nFound = %d \t Expecting = %d \t at index = %d", iter->self->value, all[j-1], j);
         assert(iter->self->value == all[j-1]);
