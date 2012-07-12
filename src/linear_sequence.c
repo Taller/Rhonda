@@ -134,19 +134,19 @@ LSQ_BaseTypeT* LSQ_DereferenceIterator(LSQ_IteratorT iterator)
 /* Функция, возвращающая итератор, ссылающийся на элемент с указанным индексом */
 LSQ_IteratorT LSQ_GetElementByIndex(LSQ_HandleT handle, LSQ_IntegerIndexT index)
 {
-    int i = 0;
     if(handle == LSQ_HandleInvalid)
     {
         return NULL;
     }
 
-    if(index > ((HandleT *)handle)->length)
+    if(index < 0 || index >= ((HandleT *)handle)->length)
     {
         return NULL;
     }
 
     NodeT * t_node = ((HandleT *)handle)->head;
-    while(i < index && t_node != t_node->next)
+    int i = 0;
+    while(i < index)
     {
         t_node = t_node->next;
         i++;
@@ -207,14 +207,16 @@ void LSQ_DestroyIterator(LSQ_IteratorT iterator)
 /* Функция, перемещающая итератор на один элемент вперед */
 void LSQ_AdvanceOneElement(LSQ_IteratorT iterator)
 {
-//    if(iterator != NULL)
-//    {
-//        ((IteratorT *)iterator)->self = ((IteratorT *)iterator)->self->next;
-//    }
     if(iterator == NULL)
     {
         return;
     }
+
+    if(LSQ_IsIteratorPastRear(iterator))
+    {
+        return;
+    }
+
 
     NodeT * next_node = ((IteratorT *)iterator)->self->next;
     if(next_node != NULL)
@@ -230,6 +232,11 @@ void LSQ_AdvanceOneElement(LSQ_IteratorT iterator)
 void LSQ_RewindOneElement(LSQ_IteratorT iterator)
 {
     if(iterator == NULL)
+    {
+        return;
+    }
+
+    if(LSQ_IsIteratorBeforeFirst(iterator))
     {
         return;
     }
@@ -253,6 +260,7 @@ void LSQ_ShiftPosition(LSQ_IteratorT iterator, LSQ_IntegerIndexT shift)
         return;
     }
 
+	
     while(shift)
     {
         if(shift > 0)
@@ -277,15 +285,15 @@ void LSQ_SetPosition(LSQ_IteratorT iterator, LSQ_IntegerIndexT pos)
     {
         return;
     }
-    
-    if(pos > ((HandleT *)((IteratorT *)iterator)->handle)->length)
+
+    if(pos < 0 || pos >= ((HandleT *)((IteratorT *)iterator)->handle)->length)
     {
         return;
     }
 
     ((IteratorT *)iterator)->self = ((HandleT *)((IteratorT *)iterator)->handle)->head->next;
     int i;
-    for(i = 1; i < pos; i++)
+    for(i = 0; i < pos; i++)
     {
         ((IteratorT *)iterator)->self = ((IteratorT *)iterator)->self->next;
     }
