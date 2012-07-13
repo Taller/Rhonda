@@ -185,6 +185,7 @@ void test4(void)
 //            printf("\n Expecting value = %d \t ", all[j]);
 //            printf("\n Found value = %d \t ", iter->self->value);
             assert( *LSQ_DereferenceIterator(iter) == all[j]);
+            assert( *LSQ_DereferenceIterator(iter) != MAX_ELEMENT_VALUE + 1);
         } 
     }
     printf("\t\t ---\t OK \n");
@@ -204,6 +205,7 @@ void test5(void)
     for(i = 0; i < LSQ_GetSize(handleAll); i++)
     {
         assert( *LSQ_DereferenceIterator(iter) == all[i]);
+        assert( *LSQ_DereferenceIterator(iter) != MAX_ELEMENT_VALUE + 1);
         LSQ_AdvanceOneElement(iter);
     }
     printf("\t\t ---\t OK \n");
@@ -215,6 +217,7 @@ void test5(void)
     {
         LSQ_RewindOneElement(iter);
         assert(*LSQ_DereferenceIterator(iter) == all[i]);
+        assert( *LSQ_DereferenceIterator(iter) != MAX_ELEMENT_VALUE + 1);
     }
     printf("\t\t ---\t OK \n");
 
@@ -238,6 +241,7 @@ void test6(void)
         j = rand() % LSQ_GetSize(handleAll);
         LSQ_ShiftPosition(iter, j);
         assert(*LSQ_DereferenceIterator(iter) == all[j]);
+        assert( *LSQ_DereferenceIterator(iter) != MAX_ELEMENT_VALUE + 1);
 
         LSQ_DestroyIterator(iter);
     }
@@ -252,7 +256,8 @@ void test6(void)
 
         j = rand() % LSQ_GetSize(handleAll);
         LSQ_ShiftPosition(iter, -j);
-        assert(*LSQ_DereferenceIterator(iter) == all[LSQ_GetSize(handleAll) - 1 - j]);
+        assert( *LSQ_DereferenceIterator(iter) == all[LSQ_GetSize(handleAll) - 1 - j]);
+        assert( *LSQ_DereferenceIterator(iter) != MAX_ELEMENT_VALUE + 1);
 
         LSQ_DestroyIterator(iter);
     }
@@ -275,6 +280,8 @@ void test7(void)
         assert( iter != NULL);
 //        printf("\nFound = %d \t Expecting = %d \t at index = %d", iter->self->value, all[j-1], j);
         assert( *LSQ_DereferenceIterator(iter) == all[j-1]);
+        assert( *LSQ_DereferenceIterator(iter) != MAX_ELEMENT_VALUE + 1);
+
         LSQ_DestroyIterator(iter);
     }
     printf("\t\t ---\t OK \n");
@@ -300,6 +307,7 @@ void test8(void)
         {
 //            printf("\nFound = %d \t Expecting = %d \t at index = %d", *LSQ_DereferenceIterator(iter), all[j], j);
             assert( *LSQ_DereferenceIterator(iter) == all[j]);
+            assert( *LSQ_DereferenceIterator(iter) != MAX_ELEMENT_VALUE + 1);
             LSQ_AdvanceOneElement(iter);
         }
         LSQ_DestroyIterator(iter);
@@ -330,6 +338,7 @@ void test9(void)
         {
 //            printf("\nFound = %d \t Expecting = %d \t at index = %d", *LSQ_DereferenceIterator(iter), all[j], j);
             assert( *LSQ_DereferenceIterator(iter) == all[j]);
+            assert( *LSQ_DereferenceIterator(iter) != MAX_ELEMENT_VALUE + 1);
             LSQ_AdvanceOneElement(iter);
         }
         LSQ_DestroyIterator(iter);
