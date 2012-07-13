@@ -4,7 +4,6 @@
 
 #include "linear_sequence.h"
 
-extern void insertFirstElement(LSQ_HandleT handle, LSQ_BaseTypeT element);
 extern void print_LSQ(LSQ_HandleT handle);
 
 typedef struct _node

@@ -91,7 +91,7 @@ int LSQ_IsIteratorPastRear(LSQ_IteratorT iterator)
 //    NodeT * node_iterator = ((IteratorT *)iterator)->self;
 //    NodeT * node_handle = handle->tail->prev;
 
-    if(((IteratorT *)iterator)->self == handle->tail->prev)
+    if(((IteratorT *)iterator)->self == handle->tail)
     {
         return 1;
     }
@@ -111,7 +111,7 @@ int LSQ_IsIteratorBeforeFirst(LSQ_IteratorT iterator)
 //    NodeT * node_iterator = ((IteratorT *)iterator)->self;
 //    NodeT * node_handle = handle->head->next;
 
-    if(((IteratorT *)iterator)->self == handle->head->next)
+    if(((IteratorT *)iterator)->self == handle->head)
     {
         return 1;
     }
@@ -189,7 +189,8 @@ LSQ_IteratorT LSQ_GetPastRearElement(LSQ_HandleT handle)
     
     IteratorT * t_iterator = malloc(sizeof(IteratorT));
 
-    t_iterator->self = ((HandleT *)handle)->tail->prev;
+//    t_iterator->self = ((HandleT *)handle)->tail->prev;
+    t_iterator->self = ((HandleT *)handle)->tail;
     t_iterator->handle = handle;
 
     return t_iterator;
@@ -266,7 +267,8 @@ void LSQ_ShiftPosition(LSQ_IteratorT iterator, LSQ_IntegerIndexT shift)
         if(shift > 0)
         {
             shift--;
-            LSQ_AdvanceOneElement(iterator);        }
+            LSQ_AdvanceOneElement(iterator);
+        }
         if(shift < 0)
         {
             shift++;
@@ -286,27 +288,28 @@ void LSQ_SetPosition(LSQ_IteratorT iterator, LSQ_IntegerIndexT pos)
         return;
     }
 
-    if(pos < 0 || pos >= ((HandleT *)((IteratorT *)iterator)->handle)->length)
+    if(pos < 0 || pos >= LSQ_GetSize(((IteratorT *)iterator)->handle))
     {
         return;
     }
 
-    if(pos <= ((HandleT *)((IteratorT *)iterator)->handle)->length - pos)
+
+    if(pos <= LSQ_GetSize(((IteratorT *)iterator)->handle) - pos)
     {
         ((IteratorT *)iterator)->self = ((HandleT *)((IteratorT *)iterator)->handle)->head->next;
         int i;
         for(i = 0; i < pos; i++)
         {
-            ((IteratorT *)iterator)->self = ((IteratorT *)iterator)->self->next;
+            LSQ_AdvanceOneElement(iterator);
         }
     }
     else
     {
         ((IteratorT *)iterator)->self = ((HandleT *)((IteratorT *)iterator)->handle)->tail->prev;
         int i;
-        for(i = 0; i < ((HandleT *)((IteratorT *)iterator)->handle)->length - pos - 1; i++)
+        for(i = 0; i < LSQ_GetSize(((IteratorT *)iterator)->handle) - pos - 1; i++)
         {
-            ((IteratorT *)iterator)->self = ((IteratorT *)iterator)->self->prev;
+            LSQ_RewindOneElement(iterator);
         }
     }
 
@@ -402,14 +405,16 @@ void LSQ_DeleteFrontElement(LSQ_HandleT handle)
         return;
     }
 
+    NodeT * gagHead = ((HandleT *)handle)->head;
     NodeT * old_first = ((HandleT *)handle)->head->next;
     NodeT * new_first = old_first->next;
 
-    new_first->prev = new_first;
+    gagHead->next = new_first;
+    new_first->prev = gagHead;
+
     free(old_first);
 
     ((HandleT *)handle)->length--;
-    ((HandleT *)handle)->head = new_first;
 }
 /* READY                                           */
 /* void LSQ_DeleteFrontElement(LSQ_HandleT handle) */
@@ -423,12 +428,16 @@ void LSQ_DeleteRearElement(LSQ_HandleT handle)
         return;
     }
 
+    NodeT * gagTail = ((HandleT *)handle)->tail;
     NodeT * old_last = ((HandleT *)handle)->tail->prev;
     NodeT * new_last = old_last->prev;
-    new_last->next = new_last;
+
+    gagTail->prev = new_last;
+    new_last->next = gagTail;
+
     free(old_last);
+
     ((HandleT *)handle)->length--;
-    ((HandleT *)handle)->tail = new_last;
 }
 /* READY                                           */
 /* void LSQ_DeleteRearElement(LSQ_HandleT handle)  */
@@ -461,21 +470,5 @@ void LSQ_DeleteGivenElement(LSQ_IteratorT iterator)
 /* READY                                                */
 /* void LSQ_DeleteGivenElement(LSQ_IteratorT iterator)  */
 
-void insertFirstElement(LSQ_HandleT handle, LSQ_BaseTypeT element)
-{
-    if(handle == LSQ_HandleInvalid)
-    {
-        return;
-    }
-
-    NodeT * t_node =  ((HandleT *) handle)->head;
-    t_node->next = t_node;
-    t_node->prev = t_node;
-    t_node->value = element;
-
-//    ((HandleT *)handle)->head = t_node;
-//    ((HandleT *)handle)->tail = t_node;
-    ((HandleT *)handle)->length = 1;
-}
 
 /* #endif */
