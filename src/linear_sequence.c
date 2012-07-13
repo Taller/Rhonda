@@ -65,17 +65,6 @@ int LSQ_IsIteratorDereferencable(LSQ_IteratorT iterator)
         && ((IteratorT *)iterator)->self != NULL
         && ((IteratorT *)iterator)->handle != NULL)
     {
-/*
-        NodeT * t_node = ((HandleT *)((IteratorT *)iterator)->handle)->head;
-        while(t_node->next != t_node)
-        {
-            if(t_node == ((IteratorT *)iterator)->self)
-            {
-                return 1;
-            }
-            t_node = t_node->next;
-        }
-*/
         return 1;
     }
 
@@ -131,7 +120,7 @@ LSQ_BaseTypeT* LSQ_DereferenceIterator(LSQ_IteratorT iterator)
     }
     return &(((NodeT *)((IteratorT *)iterator)->self)->value);
 }
-/* ???? */
+
 
 /* Следующие три функции создают итератор в памяти и возвращают его дескриптор */
 /* Функция, возвращающая итератор, ссылающийся на элемент с указанным индексом */
@@ -192,7 +181,6 @@ LSQ_IteratorT LSQ_GetPastRearElement(LSQ_HandleT handle)
     
     IteratorT * t_iterator = malloc(sizeof(IteratorT));
 
-//    t_iterator->self = ((HandleT *)handle)->tail->prev;
     t_iterator->self = ((HandleT *)handle)->tail;
     t_iterator->handle = handle;
 
