@@ -62,9 +62,10 @@ LSQ_IntegerIndexT LSQ_GetSize(LSQ_HandleT handle)
 int LSQ_IsIteratorDereferencable(LSQ_IteratorT iterator)
 {
     if(iterator != NULL
-            && ((IteratorT *)iterator)->self != NULL
-            && ((IteratorT *)iterator)->handle != NULL)
+        && ((IteratorT *)iterator)->self != NULL
+        && ((IteratorT *)iterator)->handle != NULL)
     {
+/*
         NodeT * t_node = ((HandleT *)((IteratorT *)iterator)->handle)->head;
         while(t_node->next != t_node)
         {
@@ -74,6 +75,8 @@ int LSQ_IsIteratorDereferencable(LSQ_IteratorT iterator)
             }
             t_node = t_node->next;
         }
+*/
+        return 1;
     }
 
     return 0;

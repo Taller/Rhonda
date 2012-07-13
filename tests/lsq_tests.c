@@ -118,6 +118,7 @@ void test2(void)
     {
 //        printf("front = %d \t index i = %d \t value = %d \n",front[i], i, *LSQ_DereferenceIterator(iter));
         assert( *LSQ_DereferenceIterator(iter) == front[i] );
+        assert( *LSQ_DereferenceIterator(iter) != MAX_ELEMENT_VALUE + 1 );
         LSQ_AdvanceOneElement(iter);
     }
 
@@ -131,6 +132,7 @@ void test2(void)
     {
 //        printf("rear = %d \t index i = %d \t value = %d \n",rear[i], i, *LSQ_DereferenceIterator(iter));
         assert( *LSQ_DereferenceIterator(iter) == rear[i] );
+        assert( *LSQ_DereferenceIterator(iter) != MAX_ELEMENT_VALUE + 1 );
         LSQ_RewindOneElement(iter);
     }
 
