@@ -97,8 +97,6 @@ int LSQ_IsIteratorPastRear(LSQ_IteratorT iterator)
     }
 
     HandleT * handle = ((IteratorT *)iterator)->handle;
-//    NodeT * node_iterator = ((IteratorT *)iterator)->self;
-//    NodeT * node_handle = handle->tail->prev;
 
     if(((IteratorT *)iterator)->self == handle->tail)
     {
@@ -180,6 +178,11 @@ LSQ_IteratorT LSQ_GetFrontElement(LSQ_HandleT handle)
     {
         return NULL;
     }
+    
+    if( ((HandleT *)handle)->length == 0)
+    {
+    	return NULL;
+    }
 
     IteratorT * t_iterator = malloc(sizeof(IteratorT));
 
@@ -199,6 +202,11 @@ LSQ_IteratorT LSQ_GetPastRearElement(LSQ_HandleT handle)
     if(handle == NULL)
     {
         return NULL;
+    }
+
+    if( ((HandleT *)handle)->length == 0)
+    {
+    	return NULL;
     }
     
     IteratorT * t_iterator = malloc(sizeof(IteratorT));

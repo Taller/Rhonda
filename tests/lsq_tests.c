@@ -18,6 +18,7 @@ void test6(void);
 void test7(void);
 void test8(void);
 void test9(void);                           
+void test10(void);                           
 //void print_LSQ(LSQ_HandleT handle);
 
 LSQ_BaseTypeT front[50], rear[50], all[MAX_handleALL_LEN];
@@ -95,11 +96,13 @@ int main(void)
 /* Create and destroy sequence immediately */
 void test1(void)
 {
-    printf("\Testing create and destroy sequence immediately");
+    printf("Testing create and destroy sequence immediately");
     LSQ_HandleT * handle1 = LSQ_CreateSequence();
     assert( handle1 != NULL);
     LSQ_IteratorT * iter = LSQ_GetFrontElement(handle1);
-    assert( iter != NULL);
+    assert( iter == NULL);
+    LSQ_DeleteFrontElement(handle1);
+    LSQ_DeleteRearElement(handle1); 
     LSQ_DestroyIterator(iter); 
     LSQ_DestroySequence(handle1);
     printf("\t ---\t OK \n");
@@ -352,6 +355,28 @@ void test9(void)
     }
 }
 
+/* Test IsIteratorDereferencable pastReaer, beforeFirst */
+void test10(void)
+{
+    int i, j;
+
+    printf("Testing IsIteratorDereferencable(pastReaer)");
+    LSQ_IteratorT * iterator = LSQ_GetPastRearElement(handleAll);
+    assert(LSQ_IsIteratorDereferencable(iterator) == 0);
+    assert(LSQ_IsIteratorPastRear(iterator) == 1);
+    LSQ_DeleteGivenElement(iterator);
+    LSQ_DestroyIterator(iterator);
+    printf("\t\t ---\t OK \n");
+    
+    iterator = LSQ_GetFrontElement(handleAll);
+    LSQ_RewindOneElement(iterator);
+    printf("Testing IsIteratorDereferencable(pastReaer)");
+    assert(LSQ_IsIteratorDereferencable(iterator) == 0);
+    assert(LSQ_IsIteratorBeforeFirst(iterator) == 1);
+    LSQ_DeleteGivenElement(iterator);
+    LSQ_DestroyIterator(iterator);
+    printf("\t\t ---\t OK \n");
+}
 
 
 /*
