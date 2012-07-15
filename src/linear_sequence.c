@@ -61,14 +61,31 @@ LSQ_IntegerIndexT LSQ_GetSize(LSQ_HandleT handle)
 /* Функция, определяющая, может ли данный итератор быть разыменован */
 int LSQ_IsIteratorDereferencable(LSQ_IteratorT iterator)
 {
-    if(iterator != NULL
-        && ((IteratorT *)iterator)->self != NULL
-        && ((IteratorT *)iterator)->handle != NULL)
+    if(iterator == NULL)
     {
-        return 1;
+        return 0;
+    }
+    
+    if(((IteratorT *)iterator)->self == NULL)
+    {
+        return 0;
     }
 
-    return 0;
+    if(((IteratorT *)iterator)->handle == NULL) 
+    {
+        return 0;
+    }
+
+    if(LSQ_IsIteratorPastRear(iterator))
+    {
+        return 0;
+    }
+
+    if(LSQ_IsIteratorBeforeFirst(iterator))
+    {
+        return 0;
+    }
+    return 1;
 }
 
 /* Функция, определяющая, указывает ли данный итератор на элемент, следующий за последним в контейнере */
@@ -126,17 +143,22 @@ LSQ_BaseTypeT* LSQ_DereferenceIterator(LSQ_IteratorT iterator)
 /* Функция, возвращающая итератор, ссылающийся на элемент с указанным индексом */
 LSQ_IteratorT LSQ_GetElementByIndex(LSQ_HandleT handle, LSQ_IntegerIndexT index)
 {
-    if(handle == LSQ_HandleInvalid)
+    if( handle == LSQ_HandleInvalid)
     {
         return NULL;
     }
 
-    if(index < 0 || index >= ((HandleT *)handle)->length)
+    if( index < 0)
     {
         return NULL;
     }
 
-    NodeT * t_node = ((HandleT *)handle)->head;
+    if( index >= ((HandleT *)handle)->length)
+    {
+        return NULL;
+    }
+
+    NodeT * t_node = ((HandleT *)handle)->head->next;
     int i = 0;
     while(i < index)
     {
@@ -279,13 +301,14 @@ void LSQ_SetPosition(LSQ_IteratorT iterator, LSQ_IntegerIndexT pos)
         return;
     }
 
-    if(pos < 0 || pos >= LSQ_GetSize(((IteratorT *)iterator)->handle))
+    if( (pos < 0) 
+        || (pos >= LSQ_GetSize(((IteratorT *)iterator)->handle)) )
     {
         return;
     }
 
 
-    if(pos <= LSQ_GetSize(((IteratorT *)iterator)->handle) - pos)
+    if(pos <= (LSQ_GetSize(((IteratorT *)iterator)->handle) - pos) )
     {
         ((IteratorT *)iterator)->self = ((HandleT *)((IteratorT *)iterator)->handle)->head->next;
         int i;
@@ -396,6 +419,11 @@ void LSQ_DeleteFrontElement(LSQ_HandleT handle)
         return;
     }
 
+    if(((HandleT *)handle)->length <= 0)
+    {
+        return;
+    }
+
     NodeT * gagHead = ((HandleT *)handle)->head;
     NodeT * old_first = ((HandleT *)handle)->head->next;
     NodeT * new_first = old_first->next;
@@ -415,6 +443,11 @@ void LSQ_DeleteFrontElement(LSQ_HandleT handle)
 void LSQ_DeleteRearElement(LSQ_HandleT handle)
 {
     if(handle == LSQ_HandleInvalid)
+    {
+        return;
+    }
+
+    if(((HandleT *)handle)->length <= 0)
     {
         return;
     }
@@ -441,6 +474,11 @@ void LSQ_DeleteRearElement(LSQ_HandleT handle)
 void LSQ_DeleteGivenElement(LSQ_IteratorT iterator)
 {
     if(iterator == NULL)
+    {
+        return;
+    }
+
+    if( !LSQ_IsIteratorDereferencable(iterator) )
     {
         return;
     }
