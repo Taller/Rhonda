@@ -145,6 +145,11 @@ LSQ_IteratorT LSQ_GetElementByIndex(LSQ_HandleT handle, LSQ_IntegerIndexT index)
     {
         return NULL;
     }
+    
+    if(((HandleT *)handle)->length == 0)
+    {
+    	return NULL;
+    }
 
     if( index < 0)
     {
