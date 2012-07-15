@@ -89,7 +89,8 @@ int main(void)
     /* Test delete with DeleteRearElement */
     test9(); 
 
-
+    /* Test IsIteratorDereferencable, DeleteGivenElement pastReaer, beforeFirst */
+    test10();
     return 0;
 }
 
@@ -355,12 +356,12 @@ void test9(void)
     }
 }
 
-/* Test IsIteratorDereferencable pastReaer, beforeFirst */
+/* Test IsIteratorDereferencable, DeleteGivenElement pastReaer, beforeFirst */
 void test10(void)
 {
     int i, j;
 
-    printf("Testing IsIteratorDereferencable(pastReaer)");
+    printf("Testing IsIteratorDereferencable");
     LSQ_IteratorT * iterator = LSQ_GetPastRearElement(handleAll);
     assert(LSQ_IsIteratorDereferencable(iterator) == 0);
     assert(LSQ_IsIteratorPastRear(iterator) == 1);
@@ -370,7 +371,7 @@ void test10(void)
     
     iterator = LSQ_GetFrontElement(handleAll);
     LSQ_RewindOneElement(iterator);
-    printf("Testing IsIteratorDereferencable(pastReaer)");
+    printf("Testing IsIteratorBeforeFirst");
     assert(LSQ_IsIteratorDereferencable(iterator) == 0);
     assert(LSQ_IsIteratorBeforeFirst(iterator) == 1);
     LSQ_DeleteGivenElement(iterator);
