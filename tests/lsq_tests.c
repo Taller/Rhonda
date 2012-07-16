@@ -19,11 +19,11 @@ void test7(void);
 void test8(void);
 void test9(void);                           
 void test10(void);                           
-//void print_LSQ(LSQ_HandleT handle);
+void print_LSQ(LSQ_HandleT handle);
 
 LSQ_BaseTypeT front[50], rear[50], all[MAX_handleALL_LEN];
-LSQ_HandleT * handle;
-LSQ_HandleT * handleAll;
+LSQ_HandleT handle;
+LSQ_HandleT handleAll;
 
 int main(void)
 {
@@ -98,12 +98,20 @@ int main(void)
 void test1(void)
 {
     printf("Testing create and destroy sequence immediately");
-    LSQ_HandleT * handle1 = LSQ_CreateSequence();
+    LSQ_HandleT handle1 = LSQ_CreateSequence();
     assert( handle1 != NULL);
-    LSQ_IteratorT * iter = LSQ_GetFrontElement(handle1);
+    LSQ_IteratorT iter = LSQ_GetFrontElement(handle1);
     assert( iter == NULL);
+    /* попытка удаления из пустой очереди */
     LSQ_DeleteFrontElement(handle1);
     LSQ_DeleteRearElement(handle1); 
+
+    int i;
+    for(i = 0; i < MAX_handleALL_LEN; i++)
+    {
+        LSQ_InsertRearElement(handle1, all[i]);
+    } 
+
     LSQ_DestroyIterator(iter); 
     LSQ_DestroySequence(handle1);
     printf("\t ---\t OK \n");
@@ -115,7 +123,7 @@ void test2(void)
     int i;
 //    print_LSQ(handle);    
 
-    LSQ_IteratorT * iter = LSQ_GetFrontElement(handle);
+    LSQ_IteratorT iter = LSQ_GetFrontElement(handle);
     assert( iter != NULL);
     for(i = 49; i >= 0; i--)
     {
@@ -148,7 +156,7 @@ void test2(void)
 /* Test before first and past rear */
 void test3(void)
 {
-    LSQ_IteratorT * iter = LSQ_GetFrontElement(handle);
+    LSQ_IteratorT iter = LSQ_GetFrontElement(handle);
     assert( iter != NULL);
     assert(LSQ_IsIteratorBeforeFirst(iter) != 1);
     LSQ_RewindOneElement(iter);
@@ -156,7 +164,7 @@ void test3(void)
     printf("LSQ_IsIteratorBeforeFirst\t --- \t OK \n");
 
 
-    LSQ_IteratorT * iter2 = LSQ_GetPastRearElement(handle);
+    LSQ_IteratorT iter2 = LSQ_GetPastRearElement(handle);
     assert( iter2 != NULL);
     assert(LSQ_IsIteratorPastRear(iter2) == 1);
     LSQ_RewindOneElement(iter2);
@@ -173,7 +181,7 @@ void test4(void)
 {
     int i, j;
     srand ( time(NULL) );
-    LSQ_IteratorT * iter = LSQ_GetFrontElement(handleAll);
+    LSQ_IteratorT iter = LSQ_GetFrontElement(handleAll);
     assert( iter != NULL);
 
 //    print_LSQ(handleAll);
@@ -200,7 +208,7 @@ void test4(void)
 void test5(void)
 {
     int i;
-    LSQ_IteratorT * iter = LSQ_GetFrontElement(handleAll);
+    LSQ_IteratorT iter = LSQ_GetFrontElement(handleAll);
     assert( iter != NULL);
 
 //    print_LSQ(handleAll);
@@ -219,7 +227,7 @@ void test5(void)
     for(i = LSQ_GetSize(handleAll)-1; i >= 0; i--)
     {
         LSQ_RewindOneElement(iter);
-        assert(*LSQ_DereferenceIterator(iter) == all[i]);
+        assert( *LSQ_DereferenceIterator(iter) == all[i]);
         assert( *LSQ_DereferenceIterator(iter) != MAX_ELEMENT_VALUE + 1);
     }
     printf("\t\t ---\t OK \n");
@@ -231,7 +239,7 @@ void test5(void)
 void test6(void)
 {
     int i, j;
-    LSQ_IteratorT * iter;
+    LSQ_IteratorT iter;
     srand ( time(NULL) );
 
 //    print_LSQ(handleAll);
@@ -283,7 +291,7 @@ void test7(void)
     {
         j = rand() % LSQ_GetSize(handleAll);
 //        printf("\ni = %d \t j = %d \t size = %d", i , j, LSQ_GetSize(handleAll));
-        LSQ_IteratorT * iter = LSQ_GetElementByIndex(handleAll, j);
+        LSQ_IteratorT iter = LSQ_GetElementByIndex(handleAll, j);
         assert( iter != NULL);
 //        printf("\nFound = %d \t Expecting = %d \t", *LSQ_DereferenceIterator(iter), all[j]);
         assert( *LSQ_DereferenceIterator(iter) == all[j]);
@@ -307,7 +315,7 @@ void test8(void)
     i = 0;
     while(LSQ_GetSize(handleAll))
     {
-        LSQ_IteratorT * iter = LSQ_GetFrontElement(handleAll);
+        LSQ_IteratorT iter = LSQ_GetFrontElement(handleAll);
         assert( iter != NULL);
 //        print_LSQ(handleAll);
         for(j = i; j < LSQ_GetSize(handleAll); j++)
@@ -336,7 +344,7 @@ void test9(void)
     printf("Testing DeleteRearElement");
     while(LSQ_GetSize(handleAll))
     {
-        LSQ_IteratorT * iter = LSQ_GetFrontElement(handleAll);
+        LSQ_IteratorT iter = LSQ_GetFrontElement(handleAll);
         assert( iter != NULL);
 //        print_LSQ(handleAll);
         for(j = 0; j < LSQ_GetSize(handleAll); j++)
@@ -362,7 +370,7 @@ void test10(void)
     int i, j;
 
     printf("Testing IsIteratorDereferencable");
-    LSQ_IteratorT * iterator = LSQ_GetPastRearElement(handleAll);
+    LSQ_IteratorT iterator = LSQ_GetPastRearElement(handleAll);
     assert(LSQ_IsIteratorDereferencable(iterator) == 0);
     assert(LSQ_IsIteratorPastRear(iterator) == 1);
     LSQ_DeleteGivenElement(iterator);

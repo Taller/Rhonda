@@ -29,15 +29,14 @@ void LSQ_DestroySequence(LSQ_HandleT handle)
         return;
     }
 
-    NodeT * t_node = ((HandleT *)handle)->tail;
-
-    while(t_node)
+    while( ((HandleT *)handle)->length )
     {
-        t_node = t_node->prev;
-        free(t_node);
+        LSQ_DeleteRearElement(handle);
     }
 
-    free(t_node);
+
+    free(((HandleT *)handle)->head);
+    free(((HandleT *)handle)->tail);
     free(handle);
 }
 /* READY                                         */
@@ -466,7 +465,7 @@ void LSQ_DeleteRearElement(LSQ_HandleT handle)
     }
 
     NodeT * gagTail = ((HandleT *)handle)->tail;
-    NodeT * old_last = ((HandleT *)handle)->tail->prev;
+    NodeT * old_last = gagTail->prev;
     NodeT * new_last = old_last->prev;
 
     gagTail->prev = new_last;
@@ -512,5 +511,25 @@ void LSQ_DeleteGivenElement(LSQ_IteratorT iterator)
 /* READY                                                */
 /* void LSQ_DeleteGivenElement(LSQ_IteratorT iterator)  */
 
+
+void print_LSQ(LSQ_HandleT handle)
+{
+    if(handle != LSQ_HandleInvalid)
+    {
+        HandleT * t_handler = (HandleT *)handle;
+        NodeT  * t_node = t_handler->head;
+//        NodeT * t_node = t_handler->head->next;
+        int i = 1;
+        printf("\n=========BEGIN OUTPUT================\n");
+        while(t_node)
+        {
+            printf("t_node = %p\t\tvalue = %d\t\tindex = %d\n", t_node, t_node->value, i);
+            t_node = t_node->next;
+            i++;
+        }
+        printf("=========TOTAL \t %d\t==================\n",t_handler->length);
+        printf("=========END OUTPUT\t==================\n");
+    }
+}
 
 /* #endif */
